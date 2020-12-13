@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="false" key="isRegEx"/>
+		<item value="8080" key="selection"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="incremental"/>
+		<item value="true" key="wrap"/>
+		<item value="true" key="wholeword"/>
+		<list key="findhistory">
+			<item value="S2MM_INTR_ID"/>
+			<item value="rx_package_num"/>
+			<item value="8080"/>
+			<item value="start_udp"/>
+			<item value="print_ip_settings"/>
+			<item value="Dma_Interrupt_Handler_TX"/>
+			<item value="DATA_LENTH_1"/>
+			<item value="RX_Package"/>
+			<item value="8008"/>
+			<item value="8000"/>
+			<item value="8088"/>
+			<item value="1024"/>
+			<item value="BdRXChainBuffer"/>
+			<item value="300"/>
+			<item value="mm2s_flag"/>
+		</list>
+		<list key="replacehistory">
+			<item value="8080"/>
+			<item value="8008"/>
+			<item value="8000"/>
+			<item value="8088"/>
+			<item value="512"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="300" key="DIALOG_WIDTH"/>
+		<item value="1|Microsoft YaHei UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Microsoft YaHei UI" key="DIALOG_FONT_NAME"/>
+		<item value="410" key="DIALOG_HEIGHT"/>
+		<item value="1506" key="DIALOG_X_ORIGIN"/>
+		<item value="245" key="DIALOG_Y_ORIGIN"/>
+	</section>
+</section>

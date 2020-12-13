@@ -1,0 +1,23 @@
+#-----------------------------------------------------------
+# Vivado v2019.2 (64-bit)
+# SW Build 2708876 on Wed Nov  6 21:40:23 MST 2019
+# IP Build 2700528 on Thu Nov  7 00:09:20 MST 2019
+# Start of session at: Tue Oct 27 23:00:19 2020
+# Process ID: 8428
+# Current directory: E:/workspace/Intelligent_Computing_Architectures/20201017ZYNQ_Project/ZYNQ_PROJECT/vivado
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent14716 E:\workspace\Intelligent_Computing_Architectures\20201017ZYNQ_Project\ZYNQ_PROJECT\vivado\project_1.xpr
+# Log file: E:/workspace/Intelligent_Computing_Architectures/20201017ZYNQ_Project/ZYNQ_PROJECT/vivado/vivado.log
+# Journal file: E:/workspace/Intelligent_Computing_Architectures/20201017ZYNQ_Project/ZYNQ_PROJECT/vivado\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project E:/workspace/Intelligent_Computing_Architectures/20201017ZYNQ_Project/ZYNQ_PROJECT/vivado/project_1.xpr
+update_compile_order -fileset sources_1
+open_hw_manager
+connect_hw_server -allow_non_jtag
+open_hw_target
+set_property PROGRAM.FILE {E:/workspace/Intelligent_Computing_Architectures/20201017ZYNQ_Project/ZYNQ_PROJECT/vivado/project_1.runs/impl_1/top_design.bit} [get_hw_devices xc7z020_1]
+set_property PROBES.FILE {E:/workspace/Intelligent_Computing_Architectures/20201017ZYNQ_Project/ZYNQ_PROJECT/vivado/project_1.runs/impl_1/top_design.ltx} [get_hw_devices xc7z020_1]
+set_property FULL_PROBES.FILE {E:/workspace/Intelligent_Computing_Architectures/20201017ZYNQ_Project/ZYNQ_PROJECT/vivado/project_1.runs/impl_1/top_design.ltx} [get_hw_devices xc7z020_1]
+current_hw_device [get_hw_devices xc7z020_1]
+refresh_hw_device [lindex [get_hw_devices xc7z020_1] 0]
+display_hw_ila_data [ get_hw_ila_data hw_ila_data_1 -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7z020_1] -filter {CELL_NAME=~"u_ila_0"}]]

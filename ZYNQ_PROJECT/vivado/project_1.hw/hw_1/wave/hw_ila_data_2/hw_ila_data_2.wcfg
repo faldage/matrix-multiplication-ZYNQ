@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="C:/Users/Administrator/smvm-hlx/ZYNQ_PROJECT/vivado/project_1.hw/hw_1/wave/hw_ila_data_2/hw_ila_data_2.wdb" id="1">
+         <top_modules>
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="299fs"></ZoomStartTime>
+      <ZoomEndTime time="312fs"></ZoomEndTime>
+      <Cursor1Time time="302fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="306"></NameColumnWidth>
+      <ValueColumnWidth column_width="147"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="4" />
+   <wave_markers>
+   </wave_markers>
+   <wvobject fp_name="U_SMVM_convert/U_SMVM/valid" type="logic">
+      <obj_property name="ElementShortName">U_SMVM_convert/U_SMVM/valid</obj_property>
+      <obj_property name="ObjectShortName">valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="U_SMVM_convert/U_SMVM/data_o" type="array">
+      <obj_property name="ElementShortName">U_SMVM_convert/U_SMVM/data_o[75:0]</obj_property>
+      <obj_property name="ObjectShortName">data_o[75:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="U_SMVM_convert/U_SMVM/valid_o" type="logic">
+      <obj_property name="ElementShortName">U_SMVM_convert/U_SMVM/valid_o</obj_property>
+      <obj_property name="ObjectShortName">valid_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="U_SMVM_convert/S_AXIS_Send_tdata" type="array">
+      <obj_property name="ElementShortName">U_SMVM_convert/S_AXIS_Send_tdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">S_AXIS_Send_tdata[31:0]</obj_property>
+   </wvobject>
+</wave_config>

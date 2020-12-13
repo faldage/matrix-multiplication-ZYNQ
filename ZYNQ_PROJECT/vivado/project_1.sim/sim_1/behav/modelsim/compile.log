@@ -1,0 +1,41 @@
+# do {SMVM_convert_tb_compile.do}
+# ** Warning: (vlib-34) Library already exists at "modelsim_lib/work".
+# ** Warning: (vlib-34) Library already exists at "modelsim_lib/msim".
+# ** Warning: (vlib-34) Library already exists at "modelsim_lib/msim/xil_defaultlib".
+# Model Technology ModelSim SE-64 vmap 2019.2 Lib Mapping Utility 2019.04 Apr 17 2019
+# vmap xil_defaultlib modelsim_lib/msim/xil_defaultlib 
+# Modifying modelsim.ini
+# ** Warning: (vcom-159) Mode option -64 is not supported in this context and will be ignored.
+# Model Technology ModelSim SE-64 vcom 2019.2 Compiler 2019.04 Apr 17 2019
+# Start time: 19:20:35 on Oct 26,2020
+# vcom -64 -93 -work xil_defaultlib ../../../../project_1.srcs/sources_1/ip/mult_gen_0/sim/mult_gen_0.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity mult_gen_0
+# -- Compiling architecture mult_gen_0_arch of mult_gen_0
+# End time: 19:20:35 on Oct 26,2020, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 1
+# ** Warning: (vlog-159) Mode option -64 is not supported in this context and will be ignored.
+# Model Technology ModelSim SE-64 vlog 2019.2 Compiler 2019.04 Apr 17 2019
+# Start time: 19:20:35 on Oct 26,2020
+# vlog -64 -incr -work xil_defaultlib "+incdir+../../../../project_1.srcs/sources_1/bd/design_1/ipshared/ec67/hdl" "+incdir+../../../../project_1.srcs/sources_1/bd/design_1/ipshared/2d50/hdl" "+incdir+../../../../project_1.srcs/sources_1/bd/design_1/ipshared/8713/hdl" "+incdir+C:/Xilinx/Vivado/2019.2/data/xilinx_vip/include" ../../../../project_1.srcs/sources_1/ip/blk_mem_gen_0/sim/blk_mem_gen_0.v ../../../../src/SMVM.v ../../../../src/SMVM_convert.v ../../../../src/SMVM_convert_tb.v 
+# -- Skipping module blk_mem_gen_0
+# -- Compiling module SMVM
+# -- Skipping module SMVM_convert
+# -- Skipping module SMVM_convert_tb
+# 
+# Top level modules:
+# 	SMVM_convert_tb
+# End time: 19:20:35 on Oct 26,2020, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 1
+# Model Technology ModelSim SE-64 vlog 2019.2 Compiler 2019.04 Apr 17 2019
+# Start time: 19:20:35 on Oct 26,2020
+# vlog -work xil_defaultlib glbl.v 
+# -- Compiling module glbl
+# 
+# Top level modules:
+# 	glbl
+# End time: 19:20:35 on Oct 26,2020, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0

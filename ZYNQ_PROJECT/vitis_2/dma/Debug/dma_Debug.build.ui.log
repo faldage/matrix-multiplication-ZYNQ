@@ -1,0 +1,52 @@
+2020-11-25T03:55:08.722361600255-03:55:08 **** Incremental Build of configuration Debug for project dma ****
+000-make all 
+000-make --no-print-directory pre-build
+000-a9-linaro-pre-build-step
+000-' '
+000-make --no-print-directory main-build
+000-'Building file: ../src/dma_bd/dma_bd.c'
+000-'Invoking: ARM v7 gcc compiler'
+000-arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/dma_bd/dma_bd.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -IC:/Users/Administrator/smvm-hlx/ZYNQ_PROJECT/vitis_2/platform/export/platform/sw/platform/standalone_domain/bspinclude/include -MMD -MP -MF"src/dma_bd/dma_bd.d" -MT"src/dma_bd/dma_bd.o" -o "src/dma_bd/dma_bd.o" "../src/dma_bd/dma_bd.c"
+000-'Finished building: ../src/dma_bd/dma_bd.c'
+000-' '
+000-'Building file: ../src/lwip_app.c'
+000-'Invoking: ARM v7 gcc compiler'
+000-arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/lwip_app.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -IC:/Users/Administrator/smvm-hlx/ZYNQ_PROJECT/vitis_2/platform/export/platform/sw/platform/standalone_domain/bspinclude/include -MMD -MP -MF"src/lwip_app.d" -MT"src/lwip_app.o" -o "src/lwip_app.o" "../src/lwip_app.c"
+000-../src/lwip_app.c: In function 'lwip_loop':
+000/dma/src/lwip_app.c278-1-1implicit declaration of function 'tcp_fasttmr' [-Wimplicit-function-declaration]1-../src/lwip_app.c:278:4: warning: implicit declaration of function 'tcp_fasttmr' [-Wimplicit-function-declaration]
+000-  278 |    tcp_fasttmr();
+000-      |    ^~~~~~~~~~~
+000/dma/src/lwip_app.c282-1-1implicit declaration of function 'tcp_slowtmr' [-Wimplicit-function-declaration]1-../src/lwip_app.c:282:4: warning: implicit declaration of function 'tcp_slowtmr' [-Wimplicit-function-declaration]
+000-  282 |    tcp_slowtmr();
+000-      |    ^~~~~~~~~~~
+000-At top level:
+000/dma/src/lwip_app.c76-1-1'pic_package' defined but not used [-Wunused-variable]1pic_package../src/lwip_app.c:76:3: warning: 'pic_package' defined but not used [-Wunused-variable]
+000-   76 | }*pic_package;
+000-      |   ^~~~~~~~~~~
+000/dma/src/lwip_app.c71-1-1'sen_pic' defined but not used [-Wunused-variable]1sen_pic../src/lwip_app.c:71:3: warning: 'sen_pic' defined but not used [-Wunused-variable]
+000-   71 | }*sen_pic;
+000-      |   ^~~~~~~
+000/dma/src/lwip_app.c42-1-1'udp8080_pcb' defined but not used [-Wunused-variable]1udp8080_pcb../src/lwip_app.c:42:24: warning: 'udp8080_pcb' defined but not used [-Wunused-variable]
+000-   42 | static struct udp_pcb *udp8080_pcb = NULL;
+000-      |                        ^~~~~~~~~~~
+000-'Finished building: ../src/lwip_app.c'
+000-' '
+000-'Building file: ../src/main.c'
+000-'Invoking: ARM v7 gcc compiler'
+000-arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/main.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -IC:/Users/Administrator/smvm-hlx/ZYNQ_PROJECT/vitis_2/platform/export/platform/sw/platform/standalone_domain/bspinclude/include -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+000-'Finished building: ../src/main.c'
+000-' '
+000-'Building target: dma.elf'
+000-'Invoking: ARM v7 gcc linker'
+000-arm-none-eabi-gcc -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -Wl,-build-id=none -specs=Xilinx.spec -Wl,-T -Wl,../src/lscript.ld -LC:/Users/Administrator/smvm-hlx/ZYNQ_PROJECT/vitis_2/platform/export/platform/sw/platform/standalone_domain/bsplib/lib -o "dma.elf"  ./src/dma_bd/dma_bd.o  ./src/lwip_app.o ./src/main.o ./src/platform.o ./src/platform_zynq.o ./src/zynq_interrupt.o   -Wl,--start-group,-lxil,-lgcc,-lc,--end-group -Wl,--start-group,-lxil,-llwip4,-lgcc,-lc,--end-group
+000-'Finished building target: dma.elf'
+000-' '
+000-'Invoking: ARM v7 Print Size'
+000-arm-none-eabi-size dma.elf  |tee "dma.elf.size"
+000-   text	   data	    bss	    dec	    hex	filename
+000- 107292	   3112	338745392	338855796	14328774	dma.elf
+000-'Finished building: dma.elf.size'
+000-' '
+00255-
+03:55:10 Build Finished (took 1s.550ms)
+

@@ -1,0 +1,315 @@
+/*
+ * Copyright (C) 2009 - 2018 Xilinx, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ * SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ *
+ */
+
+#include <stdio.h>
+#include "xparameters.h"
+#include "netif/xadapter.h"
+#include <lwip/tcp.h>
+#include "platform.h"
+#include "platform_config.h"
+#include "xil_printf.h"
+#include "xaxidma.h"
+#include "dma.h"
+#include "sleep.h"
+#include "dma_bd/dma_bd.h"
+#include "xil_cache.h"
+
+static struct udp_pcb *udp8080_pcb = NULL;
+
+ip_addr_t target_addr;
+
+char TargetHeader[8] = { 0, 0x00, 0x01, 0x00, 0x02 };
+
+unsigned char ip_export[4];
+unsigned char mac_export[6];
+
+extern XAxiDma RX_AxiDma;
+extern XAxiDma TX_AxiDma;
+
+extern unsigned char DmaRxBuffer[MAX_DMA_LEN] ;
+extern unsigned char DmaTxBuffer[MAX_DMA_LEN] ;
+
+short DmaBufferTmp[MAX_DMA_LEN/sizeof(short)]__attribute__ ((aligned(64)));
+
+/* for LWIP receive*/
+u8 LWIPRxBuffer0[MAX_DMA_LEN] ;
+u8 LWIPRxBuffer1[MAX_DMA_LEN] ;
+
+/*for rx_package*/
+u8 RX_Package[301][1024] ;
+int rx_package_num = 0;
+
+static struct Package
+{
+	int num_id;
+	char data[1024];
+}*sen_pic;
+static struct Package2
+{
+	int num_id;
+	char data[1024];
+}*pic_package;
+
+u64 receive_len = 0;
+int buffer_choose = 0;
+
+/*BD buffer*/
+extern u32 BdRXChainBuffer[BD_ALIGNMENT*16] ;
+extern u32 BdTXChainBuffer[BD_ALIGNMENT*16] ;
+
+extern int s2mm_flag ;
+extern int mm2s_flag ;
+
+short sent_buf[DATA_LENTH_2]  __attribute__ ((aligned(4096)));
+short receive_buf[DATA_LENTH_1]  __attribute__ ((aligned(4096)));
+
+int FrameLengthCurr = 0 ;
+
+/* defined by each RAW mode application */
+int start_udp(unsigned int port);
+int transfer_data(const char *pData, int len, const ip_addr_t *addr) ;
+int send_data(const char *frame, int data_len);
+
+extern void XAxiDma_Read(u32 *BdChainBuffer, u16 BdCount, XAxiDma *AxiDma) ;
+extern void XAxiDma_Write(u32 *BdChainBuffer, u16 BdCount, XAxiDma *AxiDma) ;
+/* missing declaration in lwIP */
+void lwip_init();
+
+static struct netif server_netif;
+struct netif *echo_netif;
+static unsigned echo_port = 7;
+static unsigned echo_server_running = 0;
+
+extern volatile int TcpFastTmrFlag;
+extern volatile int TcpSlowTmrFlag;
+
+static struct tcp_pcb* current_pcb;
+
+static const int kRecvSize = 307576;
+static int _copied = 0, _copied2 = -1;
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
+const int kRXTotal = 21*1024;
+
+static err_t
+echo_recv_callback(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
+{
+    /* do not read the packet if we are not in ESTABLISHED state */
+    if (!p) {
+        tcp_close(tpcb);
+        tcp_recv(tpcb, NULL);
+        return ERR_OK;
+    }
+    int copy_size = MIN(p->tot_len, kRecvSize - _copied);
+    xil_printf("TCP recv %d bytes, total copied %d\n", p->tot_len, _copied);
+    memcpy(DmaTxBuffer+_copied, p->payload, copy_size);
+	_copied += copy_size;
+
+	if (_copied == kRecvSize) {
+		_copied2 = -1;
+		xil_printf("go\n");
+		Xil_DCacheFlushRange((UINTPTR)DmaTxBuffer, DATA_LENTH_1);
+		XAxiDma_Write(BdTXChainBuffer, BD_COUNT, &TX_AxiDma);
+		XAxiDma_Read(BdRXChainBuffer, BD_COUNT, &RX_AxiDma);
+	}
+
+    tcp_recved(tpcb, p->tot_len);
+
+    pbuf_free(p);
+
+    return ERR_OK;
+}
+
+static err_t
+echo_accept_callback(void *arg, struct tcp_pcb *newpcb, err_t err)
+{
+    static int connection = 1;
+
+    if (current_pcb == NULL) {
+		_copied = 0;
+		_copied2 = -1;
+    	current_pcb = newpcb;
+    }
+
+    /* set the receive callback for this connection */
+    tcp_recv(newpcb, echo_recv_callback);
+
+    /* just use an integer number indicating the connection id as the
+       callback argument */
+    tcp_arg(newpcb, (void*)connection);
+
+    /* increment for subsequent accepted connections */
+    connection++;
+
+    return ERR_OK;
+}
+
+int
+start_echo_application()
+{
+    struct tcp_pcb *pcb;
+    err_t err;
+
+    /* create new TCP PCB structure */
+    pcb = tcp_new();
+    if (!pcb) {
+        xil_printf("Error creating PCB. Out of Memory\r\n");
+        return -1;
+    }
+
+    /* bind to specified @port */
+    err = tcp_bind(pcb, IP_ADDR_ANY, echo_port);
+    if (err != ERR_OK) {
+        xil_printf("Unable to bind to port %d: err = %d\r\n", echo_port, err);
+        return -2;
+    }
+
+    /* we do not need any arguments to callback functions */
+    tcp_arg(pcb, NULL);
+
+    /* listen for connections */
+    pcb = tcp_listen_with_backlog(pcb, 1);
+    if (!pcb) {
+        xil_printf("Out of memory while tcp_listen\r\n");
+        return -3;
+    }
+
+    /* specify callback to use for incoming connections */
+    tcp_accept(pcb, echo_accept_callback);
+
+    echo_server_running = 1;
+
+    return 0;
+}
+
+
+void
+print_ip(char *msg, ip_addr_t *ip)
+{
+	print(msg);
+	xil_printf("%d.%d.%d.%d\n\r", ip4_addr1(ip), ip4_addr2(ip),
+			ip4_addr3(ip), ip4_addr4(ip));
+}
+
+void
+print_ip_settings(ip_addr_t *ip, ip_addr_t *mask, ip_addr_t *gw)
+{
+
+	print_ip("Board IP: ", ip);
+	print_ip("Netmask : ", mask);
+	print_ip("Gateway : ", gw);
+}
+
+void print_app_header() {
+	xil_printf("\n\r\n\r-----AN108 lwIP UDP DEMO ------\n\r");
+	xil_printf("UDP packets sent to port 8080\n\r");
+}
+
+int lwip_loop(){
+	ip_addr_t ipaddr, netmask, gw;
+
+	/* the mac address of the board. this should be unique per board */
+	unsigned char mac_ethernet_address[] =
+	{ 0x00, 0x0a, 0x35, 0x00, 0x01, 0x02 };
+
+	echo_netif = &server_netif;
+
+	init_platform();
+
+	/* initliaze IP addresses to be used */
+	IP4_ADDR(&ipaddr,  192, 168,   50, 20);
+	IP4_ADDR(&netmask, 255, 255, 255,  0);
+	IP4_ADDR(&gw,      192, 168,   50, 1);
+
+	print_app_header();
+
+	lwip_init();
+
+	/* Add network interface to the netif_list, and set it as default */
+	if (!xemac_add(echo_netif, &ipaddr, &netmask,
+						&gw, mac_ethernet_address,
+						PLATFORM_EMAC_BASEADDR)) {
+		xil_printf("Error adding N/W interface\n\r");
+		return -1;
+	}
+
+	netif_set_default(echo_netif);
+
+	/* now enable interrupts */
+	platform_enable_interrupts();
+
+	/* specify that the network if is up */
+	netif_set_up(echo_netif);
+
+	print_ip_settings(&ipaddr, &netmask, &gw);
+	memcpy(ip_export, &ipaddr, 4);
+	memcpy(mac_export, &mac_ethernet_address, 6);
+
+
+	start_echo_application();
+	/* receive and process packets */
+	while (1) {
+		if (TcpFastTmrFlag) {
+			tcp_fasttmr();
+			TcpFastTmrFlag = 0;
+		}
+		if (TcpSlowTmrFlag) {
+			tcp_slowtmr();
+			TcpSlowTmrFlag = 0;
+		}
+		xemacif_input(echo_netif);
+		if (s2mm_flag) {
+			xil_printf("S2MM done\n");
+			Xil_DCacheInvalidateRange((UINTPTR)DmaRxBuffer, DATA_LENTH_2);
+			s2mm_flag = 0;
+			_copied2 = 0;
+		}
+		if (current_pcb != NULL) {
+			if (_copied2 > 0) {
+				if (tcp_sndbuf(current_pcb) > 0 && _copied2 <= kRXTotal) {
+					int tx_len = MIN(kRXTotal - _copied2, tcp_sndbuf(current_pcb));
+					xil_printf("TCP sending %d bytes\n", tx_len);
+					tcp_write(current_pcb, DmaRxBuffer + _copied2, tx_len, 0);
+					_copied2 += tx_len;
+
+					if (kRXTotal == _copied2) {
+						xil_printf("TCP completed\n", tx_len);
+						_copied2 = -1;
+						tcp_close(current_pcb);
+						current_pcb = NULL;
+					}
+				}
+			}
+
+		}
+	}
+	/* never reached */
+	cleanup_platform();
+
+	return 0;
+}

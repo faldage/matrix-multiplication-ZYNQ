@@ -1,0 +1,10 @@
+2020-11-25T03:55:10.743357800255-03:55:10 **** Incremental Build of configuration Debug for project dma_system ****
+000-make all 
+000-Generating bif file for the system project
+000-generate_system_bif.bat 53721 C:/Users/Administrator/smvm-hlx/ZYNQ_PROJECT/vitis_2/platform/export/platform/platform.xpfm standalone_domain C:/Users/Administrator/smvm-hlx/ZYNQ_PROJECT/vitis_2/dma_system/Debug/system.bif
+000-sdcard_gen --xpfm C:/Users/Administrator/smvm-hlx/ZYNQ_PROJECT/vitis_2/platform/export/platform/platform.xpfm --sys_config platform --bif C:/Users/Administrator/smvm-hlx/ZYNQ_PROJECT/vitis_2/dma_system/Debug/system.bif --bitstream C:/Users/Administrator/smvm-hlx/ZYNQ_PROJECT/vitis_2/dma/_ide/bitstream/top_design.bit --elf C:/Users/Administrator/smvm-hlx/ZYNQ_PROJECT/vitis_2/dma/Debug/dma.elf,ps7_cortexa9_0
+000-creating BOOT.BIN using C:/Users/Administrator/smvm-hlx/ZYNQ_PROJECT/vitis_2/dma/_ide/bitstream/top_design.bit
+000-Running C:/Xilinx/Vitis/2020.1/bin/bootgen  -image C:/Users/Administrator/smvm-hlx/ZYNQ_PROJECT/vitis_2/dma_system/Debug/sd_card_temp/boot.bif -w -o i BOOT.BIN
+00255-
+03:55:19 Build Finished (took 8s.365ms)
+
